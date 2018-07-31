@@ -55,11 +55,12 @@ export default {
     // commitPlayer(x,y,angel)
     onopen(e) {
       this.ws.send("open");
-      // functions.bot(this.ws);
+      functions.bot(this.ws);
       let data = {
         playerId: this.playerId,
         playerName: this.playerName,
       }
+      stage.animate = this.animate;
     },
     onmessage(e) {
       let data = null;
@@ -213,6 +214,9 @@ export default {
           break;
       }
     },
+    wsInit() {
+
+    },
     start() {
       // stage.init();
       if (this.playerName) {
@@ -229,7 +233,6 @@ export default {
         this.ws.onmessage = this.onmessage;
         this.ws.onclose = this.onclose;
         this.ws.onerror = this.onerror;
-        stage.animate = this.animate;
         this.isStarted = true;
 
 
@@ -244,7 +247,7 @@ export default {
     },
   },
   beforeDestroy() {
-    this.ws = null;
+    // this.ws = null;
     // console.log("bd");
   },
 

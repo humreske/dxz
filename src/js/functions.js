@@ -4,6 +4,7 @@ export default {
       x: Math.random() * 200 - 100,
       z: Math.random() * 200 - 100,
       r: Math.random() * Math.PI * 2,
+      rh: 0,
       vx: 0,
       vz: 0,
       vr: 0,
@@ -88,8 +89,14 @@ export default {
     ws.send(JSON.stringify(data));
 
     setInterval(() => {
-      this.p1fx = Math.random() * 7;
-      this.p1a = Math.random() * Math.PI * 2;
+      let data = {
+        type: "shoot",
+        playerId: "enemy1",
+        x: this.botData.p1.x,
+        z: this.botData.p1.z,
+        angel: -this.botData.p1.r,
+        angelH: Math.random() * Math.PI - Math.PI / 2
+      }
 
     }, 2000)
     setInterval(() => {

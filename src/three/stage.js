@@ -8,6 +8,7 @@ export default {
   mouseUp: null,
   keyDown: null,
   keyUp: null,
+  // players:{},
   init() {
     // console.log(this);
     // if (!this.scene) {
@@ -30,8 +31,8 @@ export default {
     this.buildPlane();
 
     let animateFrame = () => {
-      setTimeout(animateFrame, 18);
-      // requestAnimationFrame(animateFrame);
+      // setTimeout(animateFrame, 18);
+      requestAnimationFrame(animateFrame);
       this.animate();
       renderer.render(scene, camera);
     };
@@ -72,9 +73,10 @@ export default {
 
   },
   animate() {
-
+    //callback
   },
   buildPlane() {
+    let ground = new THREE.Group();
     let m1 = new THREE.MeshBasicMaterial({
       color: "#ccc",
       side: THREE.DoubleSide
@@ -91,7 +93,7 @@ export default {
     let plane0 = new THREE.Mesh(p0, m1);
     plane0.position.y = 0;
     plane0.rotation.x = Math.PI / 2;
-    this.scene.add(plane0);
+    // this.scene.add(plane0);
 
     for (let i = -10; i < 10; i++) {
       for (let j = -10; j < 10; j++) {
@@ -101,7 +103,7 @@ export default {
         pg.position.x = 100 * i * 2;
         pg.position.z = 100 * j * 2;
         pg.rotation.x = Math.PI / 2;
-        this.scene.add(pg);
+        ground.add(pg);
 
       }
     }
@@ -110,27 +112,33 @@ export default {
     let plane1 = new THREE.Mesh(p1, m2);
     plane1.position.y = 480;
     plane1.position.z = -1500;
-    this.scene.add(plane1);
+    // this.scene.add(plane1);
 
     let p2 = new THREE.PlaneGeometry(3000, 1000, 5, 5);
     let plane2 = new THREE.Mesh(p2, m2);
     plane2.position.y = 480;
     plane2.position.z = 1500;
-    this.scene.add(plane2);
+    // this.scene.add(plane2);
 
     let p3 = new THREE.PlaneGeometry(3000, 1000, 5, 5);
     let plane3 = new THREE.Mesh(p3, m2);
     plane3.position.y = 480;
     plane3.position.x = 1500;
     plane3.rotation.y = Math.PI / 2;
-    this.scene.add(plane3);
+    // this.scene.add(plane3);
 
     let p4 = new THREE.PlaneGeometry(3000, 1000, 5, 5);
     let plane4 = new THREE.Mesh(p4, m2);
     plane4.position.y = 480;
     plane4.position.x = -1500;
     plane4.rotation.y = Math.PI / 2;
-    this.scene.add(plane4);
+    // this.scene.add(plane4);
+    ground.add(plane0);
+    ground.add(plane1);
+    ground.add(plane2);
+    ground.add(plane3);
+    ground.add(plane4);
+    this.scene.add(ground);
 
 
   },
@@ -169,7 +177,15 @@ export default {
     group.add(cube4);
     group.position.x = x;
     group.position.z = z;
-    this.scene.add(group);
+    // this.scene.add(group);
+
+
+    let groupPlayer = new THREE.Group();
+    groupPlayer.add(group);
+    this.scene.add(groupPlayer);
+    console.log(this.scene);
+
+
     return group;
   },
   addLookObj() {
