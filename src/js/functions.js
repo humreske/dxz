@@ -4,11 +4,11 @@ export default {
       x: Math.random() * 200 - 100,
       z: Math.random() * 200 - 100,
       r: Math.random() * Math.PI * 2,
-      rh: 0,
       vx: 0,
       vz: 0,
       vr: 0,
       ar: 0,
+      health: 100,
     }
   },
 
@@ -69,13 +69,27 @@ export default {
       return "freeze";
     }
   },
+  angelToSpeed(angel, angelH, speed) {
+    let y = Math.sin(angelH);
+    let l = Math.cos(angelH);
+    let x = l * Math.cos(angel);
+    let z = l * Math.sin(angel);
+    return {
+      vx: x * speed,
+      vy: y * speed,
+      vz: z * speed,
+    }
+  },
   bot(ws) {
     let data = {
       type: "commitPlayer",
       playerId: "enemy1",
-      x: this.p1x,
-      z: this.p1z,
+      x: 0,
+      y: 80,
+      z: 0,
       angel: Math.random() * Math.PI * 2,
+      health: 100
+
     }
     ws.send(JSON.stringify(data));
 
@@ -83,28 +97,35 @@ export default {
       type: "commitPlayer",
       playerId: "enemy2",
       x: Math.random() * 2000 - 1000,
+      y: 80,
       z: Math.random() * 2000 - 1000,
       angel: Math.random() * Math.PI * 2,
+      health: 100
     }
     ws.send(JSON.stringify(data));
 
     setInterval(() => {
+      let angel = this.botData.p1.r;
+      let angelH = Math.random() * 0.3;
+      let v = this.angelToSpeed(angel, angelH, 20);
+
       let data = {
         type: "shoot",
         playerId: "enemy1",
         x: this.botData.p1.x,
+        y: 80,
         z: this.botData.p1.z,
-        angel: -this.botData.p1.r,
-        angelH: Math.random() * Math.PI - Math.PI / 2
+        vx: v.vx,
+        vy: v.vy,
+        vz: v.vz,
       }
+      ws.send(JSON.stringify(data));
 
-    }, 2000)
+    }, 50)
     setInterval(() => {
-      // let vx = Math.cos(this.p1fx) * 2;
-      // let vz = Math.sin(this.p1fx) * 2;
-      // this.p1x += vx;
-      // this.p1z += vz;
-      // console.log(vx);
+      // if (this.botData.p1.health > 0) {
+      // this.botData.p1.health--;
+
       this.botData.p1.vx += Math.cos(this.botData.p1.r);
       this.botData.p1.vz += Math.sin(this.botData.p1.r);
       this.botData.p1.r += this.botData.p1.vr;
@@ -134,11 +155,44 @@ export default {
         type: "commitPlayer",
         playerId: "enemy1",
         x: this.botData.p1.x,
+        y: 80,
         z: this.botData.p1.z,
         angel: -this.botData.p1.r,
+        health: this.botData.p1.health
+
       }
       ws.send(JSON.stringify(data));
+      // } else {
+      //   let data = {
+      //     type: "die",
+      //     playerId: "enemy1",
+      //   }
+      //   ws.send(JSON.stringify(data));
+      // }
     }, 17)
+    setTimeout(() => {
+      let data = {
+        type: "die",
+        playerId: "enemy2",
+      }
+      ws.send(JSON.stringify(data));
+    }, 2000)
+
+
+    // setInterval(() => {
+    //   let data = {
+    //     type: "hit",
+    //     playerId: "enemy1",
+    //     hitPlayerId: "3ffcaf8f-0e7a-4655-bac7-366a8b765866",
+    //     x: 100,
+    //     y: 30,
+    //     z: 100,
+    //   }
+    //   ws.send(JSON.stringify(data));
+
+
+
+    // }, 200)
 
 
   }

@@ -1,13 +1,23 @@
+import functions from "./functions.js"
 export default {
   scene: null,
   camera: null,
   renderer: null,
+  cross: null,
   me: null,
   mouseMove: null,
   mouseDown: null,
   mouseUp: null,
   keyDown: null,
   keyUp: null,
+  listEffect: [],
+  bulletGeometry: new THREE.SphereGeometry(10, 32, 32),
+  material11DD44: new THREE.MeshBasicMaterial({
+    color: "#11DD44"
+  }),
+  mEffect: new THREE.SpriteMaterial({
+    color: "#fff",
+  }),
   // players:{},
   init() {
     // console.log(this);
@@ -16,10 +26,10 @@ export default {
     this.me = this;
 
     let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera(45, 12 / 8, 0.1, 10000);
+    let camera = new THREE.PerspectiveCamera(45, 12 / 8, 70, 10000);
     camera.position.y = 80;
-    camera.position.x = -1000;
-    camera.position.z = -1000;
+    camera.position.x = Math.random() * 2000 - 1000;
+    camera.position.z = Math.random() * 2000 - 1000;
 
     let renderer = new THREE.WebGLRenderer();
     renderer.setSize(1200, 800);
@@ -30,9 +40,22 @@ export default {
     this.renderer = renderer;
     this.buildPlane();
 
+    // 准星
+    let gCross = new THREE.SphereGeometry(0.5, 8, 8);
+    let mCross = new THREE.MeshBasicMaterial({
+      color: "#EBF105"
+    });
+    let cross = new THREE.Mesh(gCross, mCross);
+    cross.position.x = 0;
+    cross.position.z = 0;
+    cross.position.y = 0;
+    this.scene.add(cross);
+    this.cross = cross;
+
     let animateFrame = () => {
-      // setTimeout(animateFrame, 18);
+      // setTimeout(animateFrame, 50);
       requestAnimationFrame(animateFrame);
+      this.stageAnimate();
       this.animate();
       renderer.render(scene, camera);
     };
@@ -58,12 +81,12 @@ export default {
           me.mouseMove(e.movementX, e.movementY)
         }
       }
-      document.onkeydown = e => {
+      window.onkeydown = e => {
         if (document.pointerLockElement) {
           me.keyDown(e.key)
         }
       }
-      document.onkeyup = e => {
+      window.onkeyup = e => {
         if (document.pointerLockElement) {
           me.keyUp(e.key)
         }
@@ -75,18 +98,29 @@ export default {
   animate() {
     //callback
   },
+  stageAnimate() {
+    this.listEffect.forEach(o => {
+      o.obj.position.x += o.vx;
+      o.obj.position.y += o.vy;
+      o.obj.position.z += o.vz;
+      o.vy -= 0.05;
+      if (o.obj.position.y < 0) {
+        this.remove(o.obj)
+      }
+    })
+  },
   buildPlane() {
     let ground = new THREE.Group();
     let m1 = new THREE.MeshBasicMaterial({
-      color: "#ccc",
+      color: "#c6c6c6",
       side: THREE.DoubleSide
     });
     let m2 = new THREE.MeshBasicMaterial({
-      color: "#804040",
+      color: "#7C4A25",
       side: THREE.DoubleSide
     });
     let m3 = new THREE.MeshBasicMaterial({
-      color: "#228E02",
+      color: "#4A6C5A",
       side: THREE.DoubleSide
     });
     let p0 = new THREE.PlaneGeometry(3000, 3000, 5, 5);
@@ -142,7 +176,21 @@ export default {
 
 
   },
+  remove(o) {
+    if (o) {
+      this.scene.remove(o);
+    }
+  },
+  addBullet(x, y, z) {
+    // console.log(y);
 
+    let sphere = new THREE.Mesh(this.bulletGeometry, this.material11DD44);
+    sphere.position.x = x;
+    sphere.position.y = y - 20;
+    sphere.position.z = z;
+    this.scene.add(sphere);
+    return sphere;
+  },
   addPlayer(x, z) {
     let geometry = new THREE.BoxGeometry(40, 80, 40);
     let material = new THREE.MeshBasicMaterial({
@@ -157,6 +205,15 @@ export default {
     let material3 = new THREE.MeshBasicMaterial({
       color: "#222"
     });
+    let mHealth = new THREE.SpriteMaterial({
+      color: "#f00",
+    });
+    // var map = new THREE.TextureLoader().load("sprite.png");
+    let oHealth = new THREE.Sprite(mHealth);
+    oHealth.position.y = 100;
+    oHealth.scale.set(60, 10, 1);
+
+    // scene.add(sprite);
     let cube = new THREE.Mesh(geometry, material);
     let cube2 = new THREE.Mesh(geometry2, material2);
     let cube3 = new THREE.Mesh(geometry3, material3);
@@ -175,26 +232,44 @@ export default {
     group.add(cube2);
     group.add(cube3);
     group.add(cube4);
+    group.add(oHealth);
+    group.health = oHealth;
     group.position.x = x;
     group.position.z = z;
-    // this.scene.add(group);
-
-
-    let groupPlayer = new THREE.Group();
-    groupPlayer.add(group);
-    this.scene.add(groupPlayer);
-    console.log(this.scene);
-
-
+    this.scene.add(group);
     return group;
   },
-  addLookObj() {
+  setHealth(player, health) {
+    if (health < 0) {
+      health = 0;
+    }
+    let scale = health * 0.6;
+    player.health.scale.x = scale;
+  },
+  addHitEffect(x, y, z) {
+    for (let i = 0; i < 30; i++) {
+
+      // var map = new THREE.TextureLoader().load("sprite.png");
+      let oEffect = new THREE.Sprite(this.mEffect);
+      let angel = Math.random() * Math.PI * 2;
+      let angelH = Math.random() * Math.PI - Math.PI / 2;
+      let v = functions.angelToSpeed(angel, angelH, 3);
+      oEffect.position.x = x;
+      oEffect.position.y = y;
+      oEffect.position.z = z;
+      oEffect.scale.set(5, 5, 1);
+      this.scene.add(oEffect);
+      let data = {
+        vx: v.vx,
+        vy: v.vy,
+        vz: v.vz,
+        obj: oEffect
+      };
+      this.listEffect.push(data);
+      // console.log(this.listEffect);
+    }
 
   },
-  movePlayer(o, x, z) {
-    o.position.x = x;
-    o.position.z = z;
-  }
 
 
 }
