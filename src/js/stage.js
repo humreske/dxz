@@ -1,4 +1,5 @@
 import functions from "./functions.js"
+import uuid from "uuid"
 export default {
   scene: null,
   camera: null,
@@ -10,7 +11,7 @@ export default {
   mouseUp: null,
   keyDown: null,
   keyUp: null,
-  listEffect: [],
+  listEffect: {},
   bulletGeometry: new THREE.SphereGeometry(10, 32, 32),
   material11DD44: new THREE.MeshBasicMaterial({
     color: "#11DD44"
@@ -99,15 +100,19 @@ export default {
     //callback
   },
   stageAnimate() {
-    this.listEffect.forEach(o => {
+    for (const key in this.listEffect) {
+      let o = this.listEffect[key];
       o.obj.position.x += o.vx;
       o.obj.position.y += o.vy;
       o.obj.position.z += o.vz;
       o.vy -= 0.05;
       if (o.obj.position.y < 0) {
-        this.remove(o.obj)
+        this.remove(o.obj);
+        delete this.listEffect[key];
       }
-    })
+    }
+    // console.log(this.listEffect);
+
   },
   buildPlane() {
     let ground = new THREE.Group();
@@ -259,13 +264,15 @@ export default {
       oEffect.position.z = z;
       oEffect.scale.set(5, 5, 1);
       this.scene.add(oEffect);
+      let id = uuid.v4();
       let data = {
+        id,
         vx: v.vx,
         vy: v.vy,
         vz: v.vz,
         obj: oEffect
       };
-      this.listEffect.push(data);
+      this.listEffect[id] = data;
       // console.log(this.listEffect);
     }
 

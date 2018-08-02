@@ -242,6 +242,8 @@ export default {
           obj.position.z += this.moveSpeed(data.vz);
           data.vy -= this.moveSpeed(this.gravity);
           if (obj.position.y < 0) {
+            stage.addHitEffect(obj.position.x, obj.position.y, obj.position.z);
+
             // console.log(123123);
             stage.remove(obj)
             delete this.bullets[key];
