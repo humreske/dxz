@@ -256,9 +256,9 @@ export default {
 
       // var map = new THREE.TextureLoader().load("sprite.png");
       let oEffect = new THREE.Sprite(this.mEffect);
-      let angel = Math.random() * Math.PI * 2;
-      let angelH = Math.random() * Math.PI - Math.PI / 2;
-      let v = functions.angelToSpeed(angel, angelH, 3);
+      let angle = Math.random() * Math.PI * 2;
+      let angleH = Math.random() * Math.PI - Math.PI / 2;
+      let v = functions.angleToSpeed(angle, angleH, 3);
       oEffect.position.x = x;
       oEffect.position.y = y;
       oEffect.position.z = z;

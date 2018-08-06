@@ -69,11 +69,11 @@ export default {
       return "freeze";
     }
   },
-  angelToSpeed(angel, angelH, speed) {
-    let y = Math.sin(angelH);
-    let l = Math.cos(angelH);
-    let x = l * Math.cos(angel);
-    let z = l * Math.sin(angel);
+  angleToSpeed(angle, angleH, speed) {
+    let y = Math.sin(angleH);
+    let l = Math.cos(angleH);
+    let x = l * Math.cos(angle);
+    let z = l * Math.sin(angle);
     return {
       vx: x * speed,
       vy: y * speed,
@@ -87,7 +87,7 @@ export default {
       x: 0,
       y: 80,
       z: 0,
-      angel: Math.random() * Math.PI * 2,
+      angle: Math.random() * Math.PI * 2,
       health: 100
 
     }
@@ -99,15 +99,15 @@ export default {
       x: Math.random() * 2000 - 1000,
       y: 80,
       z: Math.random() * 2000 - 1000,
-      angel: Math.random() * Math.PI * 2,
+      angle: Math.random() * Math.PI * 2,
       health: 100
     }
     ws.send(JSON.stringify(data));
 
     setInterval(() => {
-      let angel = this.botData.p1.r;
-      let angelH = Math.random() * 0.3;
-      let v = this.angelToSpeed(angel, angelH, 20);
+      let angle = this.botData.p1.r;
+      let angleH = Math.random() * 0.3;
+      let v = this.angleToSpeed(angle, angleH, 20);
 
       let data = {
         type: "shoot",
@@ -157,7 +157,7 @@ export default {
         x: this.botData.p1.x,
         y: 80,
         z: this.botData.p1.z,
-        angel: -this.botData.p1.r,
+        angle: -this.botData.p1.r,
         health: this.botData.p1.health
 
       }

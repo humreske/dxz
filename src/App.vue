@@ -39,8 +39,8 @@ export default {
       playerName: null,
       isStarted: false,
       stage: null,
-      angel: 0,
-      angelH: 0,
+      angle: 0,
+      angleH: 0,
       speed: 0,
       speedSide: 0,
       speedSize: 4,
@@ -63,7 +63,7 @@ export default {
     }
   },
   computed: {
-    moveAngel() {
+    moveAngle() {
       return functions.direction(this.speed, this.speedSide);
     }
   },
@@ -74,7 +74,7 @@ export default {
     parse(data) {
       return j.parse(data);
     },
-    // commitPlayer(x,y,angel)
+    // commitPlayer(x,y,angle)
     onopen(e) {
       // this.ws.send("open");
       // functions.bot(this.ws);
@@ -107,7 +107,7 @@ export default {
               obj.position.x = data.x;
               obj.position.y = data.y - 80;
               obj.position.z = data.z;
-              obj.rotation.y = data.angel;
+              obj.rotation.y = data.angle;
               stage.setHealth(obj, data.health);
               this.players[data.playerId] = data;
               this.players[data.playerId].obj = obj;
@@ -167,10 +167,10 @@ export default {
     shake(size = 8) {
       this.shakeSize = size;
       this.shakeTimer = setInterval(() => {
-        let angel = Math.random() * 6.28;
+        let angle = Math.random() * 6.28;
         this.stageStyle = {
-          left: Math.cos(angel) * this.shakeSize + "px",
-          top: Math.sin(angel) * this.shakeSize + "px"
+          left: Math.cos(angle) * this.shakeSize + "px",
+          top: Math.sin(angle) * this.shakeSize + "px"
         }
         this.shakeSize--;
         if (this.shakeSize < 0) {
@@ -197,9 +197,9 @@ export default {
     },
     playerMove() {
       // console.log(stage.camera.position.y);
-      if (this.moveAngel != "freeze") {
-        stage.camera.position.x += this.moveSpeed(this.speedSize) * Math.cos(this.angel + this.moveAngel);
-        stage.camera.position.z += this.moveSpeed(this.speedSize) * Math.sin(this.angel + this.moveAngel);
+      if (this.moveAngle != "freeze") {
+        stage.camera.position.x += this.moveSpeed(this.speedSize) * Math.cos(this.angle + this.moveAngle);
+        stage.camera.position.z += this.moveSpeed(this.speedSize) * Math.sin(this.angle + this.moveAngle);
         if (stage.camera.position.x > 1390) {
           stage.camera.position.x = 1390;
         }
@@ -223,10 +223,10 @@ export default {
         }
       }
       // 准星
-      let y = 75 * Math.sin(this.angelH) + stage.camera.position.y;
-      let l = 75 * Math.cos(this.angelH);
-      let x = l * Math.cos(this.angel) + stage.camera.position.x;
-      let z = l * Math.sin(this.angel) + stage.camera.position.z;
+      let y = 75 * Math.sin(this.angleH) + stage.camera.position.y;
+      let l = 75 * Math.cos(this.angleH);
+      let x = l * Math.cos(this.angle) + stage.camera.position.x;
+      let z = l * Math.sin(this.angle) + stage.camera.position.z;
       stage.cross.position.x = x;
       stage.cross.position.y = y;
       stage.cross.position.z = z;
@@ -265,7 +265,7 @@ export default {
         x: stage.camera.position.x,
         y: stage.camera.position.y,
         z: stage.camera.position.z,
-        angel: -this.angel,
+        angle: -this.angle,
         health: this.health
       }
       if (!this.isDie) {
@@ -318,9 +318,9 @@ export default {
     shoot() {
       if (this.frames % 10 == 0) {
         if (this.isShoot) {
-          let angel = this.angel;
-          let angelH = this.angelH + 0.12;
-          let v = functions.angelToSpeed(angel, angelH, this.bulletSpeed);
+          let angle = this.angle;
+          let angleH = this.angleH + 0.12;
+          let v = functions.angleToSpeed(angle, angleH, this.bulletSpeed);
 
           let data = {
             type: "shoot",
@@ -365,22 +365,22 @@ export default {
       // console.log(stage.camera);
       // stage.camera.rotation.y += -mx / 500;
       // stage.camera.up.x += -my / 500;
-      this.angel += mx / 500;
-      if (this.angel >= Math.PI * 2 || this.angel <= -Math.PI * 2) {
-        this.angel = 0;
+      this.angle += mx / 500;
+      if (this.angle >= Math.PI * 2 || this.angle <= -Math.PI * 2) {
+        this.angle = 0;
       }
-      // console.log(this.angel);
-      this.angelH += -my / 500;
-      if (this.angelH >= Math.PI / 2 - 0.1) {
-        this.angelH = Math.PI / 2 - 0.1
+      // console.log(this.angle);
+      this.angleH += -my / 500;
+      if (this.angleH >= Math.PI / 2 - 0.1) {
+        this.angleH = Math.PI / 2 - 0.1
       }
-      if (this.angelH <= -Math.PI / 2 + 0.1) {
-        this.angelH = -Math.PI / 2 + 0.1
+      if (this.angleH <= -Math.PI / 2 + 0.1) {
+        this.angleH = -Math.PI / 2 + 0.1
       }
-      let y = 100 * Math.sin(this.angelH) + stage.camera.position.y;
-      let l = 100 * Math.cos(this.angelH);
-      let x = l * Math.cos(this.angel) + stage.camera.position.x;
-      let z = l * Math.sin(this.angel) + stage.camera.position.z;
+      let y = 100 * Math.sin(this.angleH) + stage.camera.position.y;
+      let l = 100 * Math.cos(this.angleH);
+      let x = l * Math.cos(this.angle) + stage.camera.position.x;
+      let z = l * Math.sin(this.angle) + stage.camera.position.z;
       stage.camera.lookAt(x, y, z);
 
     },
