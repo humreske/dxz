@@ -1,20 +1,20 @@
 <template>
   <div id="app">
     <!-- <div class="title">DXZ</div> -->
-    <div style="height:20px"></div>
+    <div style="height: 20px"></div>
     <div class="stage" :style="stageStyle" id="stage">
       <div class="mask" v-if="isDie">3秒后复活...</div>
     </div>
     <div class="login" v-if="!isStarted">
       <div class="login__box">
         <span>大名：</span>
-        <input style="font-size:26px;width:200px" type="text" v-model="playerName">
-        <div style="width:20px"></div>
+        <input style="font-size: 26px; width: 200px" type="text" v-model="playerName" />
+        <div style="width: 20px"></div>
         <button @click="start">开始</button>
       </div>
     </div>
     <div class="health">
-      <div class="health__in" v-if="!isDie" :style="{width:health+'%'}"></div>
+      <div class="health__in" v-if="!isDie" :style="{ width: health + '%' }"></div>
       <!-- <div class="resurgence-text" v-if="isDie">3秒后复活...</div> -->
     </div>
     <!-- <div>{{players}}</div> -->
@@ -23,16 +23,16 @@
 
 <script>
 import uuid from "uuid";
-import functions from "./js/functions.js"
+import functions from "./js/functions.js";
 import moment from "moment";
 import j from "json5";
-import stage from "./js/stage.js"
+import stage from "./js/stage.js";
 export default {
   data() {
     return {
       stageStyle: {
         top: 0,
-        left: 0
+        left: 0,
       },
       ws: null,
       playerId: null,
@@ -60,12 +60,12 @@ export default {
       shakeSize: 0,
       shakeTimer: null,
       isDie: false,
-    }
+    };
   },
   computed: {
     moveAngle() {
       return functions.direction(this.speed, this.speedSide);
-    }
+    },
   },
   methods: {
     str(data) {
@@ -81,16 +81,14 @@ export default {
       let data = {
         playerId: this.playerId,
         playerName: this.playerName,
-      }
+      };
       stage.animate = this.animate;
     },
     onmessage(e) {
       let data = null;
       try {
-        data = this.parse(e.data)
-      } catch (error) {
-
-      }
+        data = this.parse(e.data);
+      } catch (error) {}
       if (data) {
         if (data.type === "commitPlayer") {
           // console.log(data);
@@ -119,9 +117,9 @@ export default {
           // console.log(this.players[data.playerId]);
           if (this.players[data.playerId]) {
             setTimeout(() => {
-              stage.remove(this.players[data.playerId].obj)
+              stage.remove(this.players[data.playerId].obj);
               delete this.players[data.playerId];
-            }, 200)
+            }, 200);
           }
         }
         if (data.type === "shoot") {
@@ -133,7 +131,6 @@ export default {
           if (data.playerId === this.playerId) {
             this.playerBullets[bulletId] = this.bullets[bulletId];
           }
-
         }
         if (data.type === "hit") {
           if (data.hitPlayerId == this.playerId) {
@@ -148,7 +145,7 @@ export default {
                 let data = {
                   type: "die",
                   playerId: this.playerId,
-                }
+                };
                 this.ws.send(this.str(data));
               }
             }
@@ -170,17 +167,17 @@ export default {
         let angle = Math.random() * 6.28;
         this.stageStyle = {
           left: Math.cos(angle) * this.shakeSize + "px",
-          top: Math.sin(angle) * this.shakeSize + "px"
-        }
+          top: Math.sin(angle) * this.shakeSize + "px",
+        };
         this.shakeSize--;
         if (this.shakeSize < 0) {
           this.stageStyle = {
             left: 0,
-            top: 0
-          }
+            top: 0,
+          };
           clearTimeout(this.shakeTimer);
         }
-      }, 20)
+      }, 20);
     },
     resurgence() {
       setTimeout(() => {
@@ -189,11 +186,11 @@ export default {
         stage.camera.position.x = Math.random() * 2000 - 1000;
         stage.camera.position.z = Math.random() * 2000 - 1000;
         stage.camera.position.y = 80;
-      }, 3000)
+      }, 3000);
     },
 
     moveSpeed(s) {
-      return s * this.diff / 16;
+      return (s * this.diff) / 16;
     },
     playerMove() {
       // console.log(stage.camera.position.y);
@@ -245,14 +242,12 @@ export default {
             stage.addHitEffect(obj.position.x, obj.position.y, obj.position.z);
 
             // console.log(123123);
-            stage.remove(obj)
+            stage.remove(obj);
             delete this.bullets[key];
             if (this.playerBullets[key]) {
               delete this.playerBullets[key];
             }
           }
-
-
         }
       }
       // console.log("-----------");
@@ -266,8 +261,8 @@ export default {
         y: stage.camera.position.y,
         z: stage.camera.position.z,
         angle: -this.angle,
-        health: this.health
-      }
+        health: this.health,
+      };
       if (!this.isDie) {
         this.ws.send(this.str(data));
       }
@@ -278,19 +273,19 @@ export default {
         if (bullet && player) {
           if (Math.abs(bullet.position.x - player.position.x) < 50 && Math.abs(bullet.position.z - player.position.z) < 50 && bullet.position.y < 90) {
             // console.log("hit!!!!!!!!");
-            return true
+            return true;
           } else {
             return false;
           }
         } else {
           return false;
         }
-      }
+      };
       for (const keyBullet in this.playerBullets) {
         for (const keyPlayer in this.players) {
           if (this.playerBullets[keyBullet] && this.players[keyPlayer]) {
             if (hitTestObj(this.playerBullets[keyBullet].obj, this.players[keyPlayer].obj)) {
-              // 
+              //
               // console.log("hit!!!!");
               // console.log(this.playerBullets[keyBullet].obj.position, this.players[keyPlayer].obj.position);
               let obj = this.playerBullets[keyBullet].obj;
@@ -303,11 +298,10 @@ export default {
                 x: this.playerBullets[keyBullet].obj.position.x,
                 y: this.playerBullets[keyBullet].obj.position.y,
                 z: this.playerBullets[keyBullet].obj.position.z,
-              }
+              };
               this.ws.send(this.str(data));
 
-
-              stage.remove(this.playerBullets[keyBullet].obj)
+              stage.remove(this.playerBullets[keyBullet].obj);
               delete this.playerBullets[keyBullet];
               delete this.bullets[keyBullet];
             }
@@ -331,7 +325,7 @@ export default {
             vx: v.vx,
             vy: v.vy,
             vz: v.vz,
-          }
+          };
           // console.log(stage.camera.position);
           if (!this.isDie) {
             this.ws.send(this.str(data));
@@ -372,17 +366,16 @@ export default {
       // console.log(this.angle);
       this.angleH += -my / 500;
       if (this.angleH >= Math.PI / 2 - 0.1) {
-        this.angleH = Math.PI / 2 - 0.1
+        this.angleH = Math.PI / 2 - 0.1;
       }
       if (this.angleH <= -Math.PI / 2 + 0.1) {
-        this.angleH = -Math.PI / 2 + 0.1
+        this.angleH = -Math.PI / 2 + 0.1;
       }
       let y = 100 * Math.sin(this.angleH) + stage.camera.position.y;
       let l = 100 * Math.cos(this.angleH);
       let x = l * Math.cos(this.angle) + stage.camera.position.x;
       let z = l * Math.sin(this.angle) + stage.camera.position.z;
       stage.camera.lookAt(x, y, z);
-
     },
     mouseDown() {
       this.isShoot = !this.isShoot;
@@ -450,9 +443,7 @@ export default {
           break;
       }
     },
-    wsInit() {
-
-    },
+    wsInit() {},
     start() {
       // stage.init();
       if (this.playerName) {
@@ -471,15 +462,12 @@ export default {
         this.ws.onerror = this.onerror;
         this.isStarted = true;
 
-
         // this.stage = stage;
         // this.stage.init();
         // this.player = stage.addPlayer(500, -500);
-
       } else {
         alert("请输入大名。111");
       }
-
     },
   },
   beforeDestroy() {
@@ -489,7 +477,7 @@ export default {
 
   mounted() {
     // console.log("mounted");
-    document.pointerLockElement
+    document.pointerLockElement;
     this.playerName = localStorage.getItem("playerName");
     this.playerId = localStorage.getItem("playerId");
     stage.mouseMove = this.mouseMove;
@@ -500,15 +488,9 @@ export default {
     stage.init();
     // console.log(stage);
 
-
-
-
-
     this.start();
-
-
-  }
-}
+  },
+};
 </script>
 
 <style>
